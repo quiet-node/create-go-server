@@ -263,7 +263,42 @@ dev:
 go-run:
 	@go run .
 EOF
-fi
+echo "Done."
+
+# Add README.md
+echo
+echo "Generating README.md..."
+cat << EOF > README.md
+# $project_name
+
+## Overview
+**** ***your server overview*** ****
+
+## Getting Started
+
+### Requirement
+
+- [git](https://git-scm.com/)
+- [golang](https://go.dev/)
+
+### Set up environment variables
+
+At the root of the directory, create a .env file using .env.example as the template and fill out the variables.
+
+### Running the project
+
+Build and run \`$project_name\` in hot-reload dev mode locally using \`Make\` script
+\`\`\`bash
+make dev
+\`\`\`
+
+
+### Resources 
+Built by [Quiet Node](https://github.com/quiet-node) using [Create Go Server shell tool](https://github.com/quiet-node/create-go-server)
+
+EOF
+echo "Done."
+
 echo "Done."
 
 echo 
