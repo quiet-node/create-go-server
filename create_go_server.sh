@@ -110,10 +110,74 @@ echo "Done."
 
 # Install Gin-Gonic if selected
 if [[ $install_gin =~ ^[Yy]$ ]]; then
+    # install gin-gonic
     echo 
     echo "Running go get -u github.com/gin-gonic/gic..."
     go get -u github.com/gin-gonic/gin
     echo "Done."
+
+    # creating sample gin gonic main.go
+    echo "Creating Gin-Gonic main.go example..."
+    cat << EOF > main.go
+package main
+
+// @import
+import (
+  "log"
+  "net/http"
+
+  "github.com/gin-gonic/gin"
+  "github.com/joho/godotenv"
+)
+
+// @dev Root function
+func main() {
+  // Loads environment variables
+  err := godotenv.Load()
+  if err != nil {
+    log.Fatal("Error loading .env file")
+  }
+
+  // Init gin engine
+  r := gin.Default()
+
+  // HTTP Get
+  r.GET("/ping", func(c *gin.Context) {
+    c.JSON(http.StatusOK, gin.H{
+      "message": "pong",
+    })
+  })
+
+  // run gin engine
+  r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+}
+EOF
+else 
+    echo "Creating net/http main.go example..."
+    cat << EOF > main.go
+package main
+
+// @import
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
+
+// @dev Root function
+func main() {
+	http.HandleFunc("/", handler)
+	fmt.Println("Server listening on port 8080...")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+// @dev http handler
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello, World!")
+}
+
+EOF
+echo "Done."
 fi
 
 # Install CompileDaemon if selected
