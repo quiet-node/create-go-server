@@ -8,10 +8,6 @@
 read -p "Project name: (Press Enter for default: my-go-server): " project_name
 project_name=${project_name:-my-go-server}
 
-# Prompt for Gin-Gonic installation
-read -p "Would you like to install Gin-Gonic web framework? (Y/n): " install_gin
-install_gin=${install_gin:-Y}
-
 # Prompt for database driver selection
 db_driver=""
 db_driver_option=""
@@ -68,16 +64,15 @@ go install github.com/githubnemo/CompileDaemon
 echo "Done."
 
 # Install Gin-Gonic if selected
-if [[ $install_gin =~ ^[Yy]$ ]]; then
-    # install gin-gonic
-    echo 
-    echo "Running go get -u github.com/gin-gonic/gic..."
-    go get -u github.com/gin-gonic/gin
-    echo "Done."
+# install gin-gonic
+echo 
+echo "Running go get -u github.com/gin-gonic/gic..."
+go get -u github.com/gin-gonic/gin
+echo "Done."
 
-    # creating sample gin gonic main.go
-    echo "Creating Gin-Gonic main.go example..."
-    cat << EOF > main.go
+# creating sample gin gonic main.go
+echo "Creating Gin-Gonic main.go example..."
+cat << EOF > main.go
 package main
 
 // @import
@@ -111,33 +106,8 @@ func main() {
   r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
 EOF
-else 
-    echo "Creating net/http main.go example..."
-    cat << EOF > main.go
-package main
 
-// @import
-import (
-	"fmt"
-	"log"
-	"net/http"
-)
-
-// @dev Root function
-func main() {
-	http.HandleFunc("/", handler)
-	fmt.Println("Server listening on port 8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-// @dev http handler
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, World!")
-}
-
-EOF
 echo "Done."
-fi
 
 #Install dbdriver
 case $db_driver_option in
