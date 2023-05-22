@@ -369,16 +369,43 @@ package main
 
 // @import
 import (
-	"$project_name/routers"
+	"$project_name/db"
 	"$project_name/utils"
+	"$project_name/routers"
 	"os"
 
 	"github.com/gin-gonic/gin"
+EOF
+
+if [[ $db_driver_option == "1" ]]; then
+    cat << EOF >> main.go
+  "context"
+  "go.mongodb.org/mongo-driver/mongo"
+EOF
+elif [[ $db_driver_option == "2" ]]; then
+    cat << EOF >> main.go
+  "gorm.io/gorm"
+EOF
+fi
+cat << EOF >> main.go
 )
 
 // @notice: global variables
 var (
   server			*gin.Engine
+EOF
+if [[ $db_driver_option == "1" ]]; then 
+  cat << EOF >> main.go
+  ctx			context.Context
+	mongoClient		*mongo.Client
+	mongoCollection		*mongo.Collection
+EOF
+elif [[ $db_driver_option == "2" ]]; then
+  cat << EOF >> main.go
+  postgresClient		*gorm.DB
+EOF
+fi
+cat << EOF >> main.go
 )
 
 // @dev Runs before main()
@@ -391,12 +418,43 @@ func init() {
 
   // Gin trust all proxies by default and it's not safe. Set trusted proxy to home router to to mitigate 
   server.SetTrustedProxies([]string{os.Getenv("HOME_ROUTER")})
+
+EOF
+if [[ $db_driver_option == "1" ]]; then
+  cat << EOF >> main.go
+	// init context
+	ctx = context.TODO()
+
+	// init mongo client
+	mongoClient = db.EstablishMongoClient(ctx)
+
+	// get mongoCollection
+	mongoCollection = db.GetMongoCollection(mongoClient, "your-mongo-collection")
+EOF
+
+elif [[ $db_driver_option == "2" ]]; then
+  cat << EOF >> main.go
+  // init postgres client
+  postgresClient = db.EstablishPostgresClient()
+EOF
+fi
+
+cat << EOF >> main.go
 }
 
 // @dev Root function
 func main() {
   // Catch all unallowed HTTP methods sent to the server
   server.HandleMethodNotAllowed = true
+
+EOF
+if [[ $db_driver_option == "1" ]]; then
+  cat << EOF >> main.go
+  // defer a call to `Disconnect()` after instantiating client
+	defer func() {if err := mongoClient.Disconnect(ctx); err != nil {panic(err)}}()
+EOF
+fi
+cat << EOF >> main.go
 
   // init basePath
   basePath := server.Group("/v1")
