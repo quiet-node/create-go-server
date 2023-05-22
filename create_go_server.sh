@@ -299,6 +299,10 @@ Built by [Quiet Node](https://github.com/quiet-node) using [Create Go Server she
 EOF
 echo "Done."
 
+# Initial commit
+echo
+echo "Commit inital setup..."
+git add . && git commit -am "init: generated new Go server"
 echo "Done."
 
 echo 
