@@ -152,6 +152,8 @@ echo "Done."
 echo 
 echo "Creating sample .env..."
 cat << EOF > .env
+LOCAL_DEV_PORT=127.0.0.1:41125
+HOME_ROUTER=192.168.1.2
 PRODUCTION_PORT=8080
 $db_uri=YOUR_DB_URI
 $db_name=YOUR_DB_NAME
@@ -162,6 +164,8 @@ echo "Done."
 echo 
 echo "Creating sample example.env..."
 cat << EOF > example.env
+LOCAL_DEV_PORT=127.0.0.1:41125
+HOME_ROUTER=192.168.1.2
 PRODUCTION_PORT=8080
 $db_uri=YOUR_DB_URI
 $db_name=YOUR_DB_NAME
