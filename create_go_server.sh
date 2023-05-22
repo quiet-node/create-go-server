@@ -12,16 +12,13 @@ project_name=${project_name:-my-go-server}
 db_driver=""
 db_driver_option=""
 while [[ ! $db_driver =~ ^(1|2|3)$ ]]; do
-    read -p "Which database driver would you like to install? (1) MongoDB, (2) PostgreSQL, (3) Others: " db_driver
+    read -p "Which database driver would you like to install? (1) MongoDB, (2) PostgreSQL: " db_driver
     case $db_driver in 
         1)
             db_driver_option="1"
             ;;
         2)
             db_driver_option="2"
-            ;;
-        3)
-            db_driver_option="3"
             ;;
         *)
             echo "Invalid option. Please select a valid database driver."
