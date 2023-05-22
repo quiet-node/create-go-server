@@ -15,6 +15,10 @@ install_gin=${install_gin:-Y}
 # Prompt for CompileDaemon installation
 read -p "Would you like to install CompileDaemon package for live dev server update? (Y/n): " install_compile_daemon
 install_compile_daemon=${install_compile_daemon:-Y}
+
+# Prompt for godotenv installation
+read -p "Would you like to install godotenv package? (Y/n): " install_godotenv
+install_godotenv=${install_godotenv:-Y}
 #############################################
 #########    INSTALLATION      ##############
 #############################################
@@ -35,4 +39,9 @@ fi
 if [[ $install_compile_daemon =~ ^[Yy]$ ]]; then
     go get github.com/githubnemo/CompileDaemon
     go install github.com/githubnemo/CompileDaemon
+fi
+
+# Install godotenv if selected
+if [[ $install_godotenv =~ ^[Yy]$ ]]; then
+    go get github.com/joho/godotenv
 fi
