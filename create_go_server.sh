@@ -172,6 +172,31 @@ $db_name=YOUR_DB_NAME
 EOF
 echo "Done."
 
+# Generated LoadEnvVars() in utils
+echo
+echo "Constructing LoadEnvVars() initializer..."
+mkdir utils
+cd utils
+cat << EOF > utils.go
+package utils
+
+import (
+	"log"
+
+	"github.com/joho/godotenv"
+)
+
+// @dev Loads environment variables
+func LoadEnvVars() {
+	err := godotenv.Load();
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
+
+EOF
+cd ..
+echo "Done."
 
 # Add .gitignore
 echo "Creating sample .gitignore..."
