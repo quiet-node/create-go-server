@@ -44,8 +44,11 @@ done
 
 # Prompt for add_env_file selection
 read -p "Would you like to add a sample .env? (Y/n) " add_env_file
-add_env_file=${env_file:-Y}
 add_env_file=${add_env_file:-Y}
+
+# Prompt for Makefile selection
+read -p "Would you like to add a sample Makefile? (Y/n) " add_makefile
+add_makefile=${add_makefile:-Y}
 
 
 
@@ -110,26 +113,19 @@ $db_uri=YOUR_DB_URI
 $db_name=YOUR_DB_NAME
 EOF
 
-    # Create .gitignore
-    cat << EOF > .gitignore
-# If you prefer the allow list template instead of the deny list, see community template:
-# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
-#
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+# Create Makefile
+if [[ $add_env_file =~ ^[Yy]$ ]]; then
+    echo 
+    echo "Creating sample Makefile..."
+    cat << EOF > Makefile
+include .env
 
-# Test binary, built with `go test -c`
-*.test
-
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
-
-# Dependency directories (remove the comment below to include it)
-# vendor/
+############### GLOBAL VARS ###############
+COMPILEDAEMON_PATH=~/go/bin/CompileDaemon # CompileDaemon for hot reload
+GO_SERVER=$project_name
+#############################################
+############### LOCAL BUILD #################
+#############################################
 
 # Workspace file
 go.work
