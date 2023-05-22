@@ -220,17 +220,15 @@ case $db_driver_option in
             ;;
     esac
 
-# Configure .env file if env_file is specified
-if [[ $add_env_file =~ ^[Yy]$ ]]; then
-    echo 
-    echo "Creating sample .env..."
-    # Create .env
-    cat << EOF > $env_file
+# Create .env
+echo 
+echo "Creating sample .env..."
+cat << EOF > .env
 PRODUCTION_PORT=8080
 $db_uri=YOUR_DB_URI
 $db_name=YOUR_DB_NAME
 EOF
-    echo "Done."
+echo "Done."
 
 # Create .env.example
 echo 
@@ -243,10 +241,9 @@ EOF
 echo "Done."
 
 # Create Makefile
-if [[ $add_env_file =~ ^[Yy]$ ]]; then
-    echo 
-    echo "Creating sample Makefile..."
-    cat << EOF > Makefile
+echo 
+echo "Creating sample Makefile..."
+cat << EOF > Makefile
 include .env
 
 ############### GLOBAL VARS ###############
@@ -266,8 +263,8 @@ dev:
 go-run:
 	@go run .
 EOF
-    echo "Done."
 fi
+echo "Done."
 
 echo 
 echo "Success! Created $project_name at $(pwd)"
