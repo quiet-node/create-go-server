@@ -31,7 +31,7 @@ while [[ ! $db_driver =~ ^(1|2|3)$ ]]; do
 done
 
 #############################################
-#########    INSTALLATIONS      #############
+#########    Install Packages      ##########
 #############################################
 
 # Generate and cd to the new directory
@@ -54,7 +54,6 @@ echo
 echo "Running git init..."
 git init
 echo "Done."
-echo
 
 # Install CompileDaemon
 echo 
@@ -70,44 +69,6 @@ echo "Running go get -u github.com/gin-gonic/gic..."
 go get -u github.com/gin-gonic/gin
 echo "Done."
 
-# creating sample gin gonic main.go
-echo "Creating Gin-Gonic main.go example..."
-cat << EOF > main.go
-package main
-
-// @import
-import (
-  "log"
-  "net/http"
-
-  "github.com/gin-gonic/gin"
-  "github.com/joho/godotenv"
-)
-
-// @dev Root function
-func main() {
-  // Loads environment variables
-  err := godotenv.Load()
-  if err != nil {
-    log.Fatal("Error loading .env file")
-  }
-
-  // Init gin engine
-  r := gin.Default()
-
-  // HTTP Get
-  r.GET("/ping", func(c *gin.Context) {
-    c.JSON(http.StatusOK, gin.H{
-      "message": "pong",
-    })
-  })
-
-  // run gin engine
-  r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-}
-EOF
-
-echo "Done."
 
 #Install dbdriver
 case $db_driver_option in
@@ -148,9 +109,13 @@ echo "Running go get github.com/joho/godotenv..."
 go get github.com/joho/godotenv
 echo "Done."
 
-# Create .env
+#############################################
+#########    Project codebase      ##########
+#############################################
+
+# Add .env
 echo 
-echo "Creating sample .env..."
+echo "Generating sample .env..."
 cat << EOF > .env
 LOCAL_DEV_PORT=127.0.0.1:41125
 HOME_ROUTER=192.168.1.2
@@ -160,9 +125,9 @@ $db_name=YOUR_DB_NAME
 EOF
 echo "Done."
 
-# Create .env.example
+# Add .env.example
 echo 
-echo "Creating sample example.env..."
+echo "Generating sample example.env..."
 cat << EOF > example.env
 LOCAL_DEV_PORT=127.0.0.1:41125
 HOME_ROUTER=192.168.1.2
@@ -172,34 +137,9 @@ $db_name=YOUR_DB_NAME
 EOF
 echo "Done."
 
-# Generated LoadEnvVars() in utils
-echo
-echo "Constructing LoadEnvVars() initializer..."
-mkdir utils
-cd utils
-cat << EOF > utils.go
-package utils
-
-import (
-	"log"
-
-	"github.com/joho/godotenv"
-)
-
-// @dev Loads environment variables
-func LoadEnvVars() {
-	err := godotenv.Load();
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
-
-EOF
-cd ..
-echo "Done."
-
 # Add .gitignore
-echo "Creating sample .gitignore..."
+echo
+echo "Generating sample .gitignore..."
     cat << EOF > .gitignore
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
@@ -229,7 +169,7 @@ echo "Done."
 
 # Add Makefile
 echo 
-echo "Creating sample Makefile..."
+echo "Generating sample Makefile..."
 cat << EOF > Makefile
 include .env
 
@@ -285,6 +225,108 @@ Built by [Quiet Node](https://github.com/quiet-node) using [Create Go Server she
 
 EOF
 echo "Done."
+
+# Generate LoadEnvVars() in utils dir
+echo
+echo "Constructing LoadEnvVars() initializer..."
+mkdir utils
+cd utils
+cat << EOF > utils.go
+package utils
+
+import (
+	"log"
+
+	"github.com/joho/godotenv"
+)
+
+// @dev Loads environment variables
+func LoadEnvVars() {
+	err := godotenv.Load();
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
+
+EOF
+cd ..
+echo "Done."
+
+# Generate Router directory
+echo
+echo "Constructing Router Handlers..."
+mkdir routers
+cd routers
+cat << EOF > routers.go
+package routers
+
+import "github.com/gin-gonic/gin"
+
+// @dev Declares list of endpoints
+func ServerRouter (rg *gin.RouterGroup) {
+	rg.GET("/ping", func(gc *gin.Context) {
+		gc.JSON(200, "pong")
+	})
+}
+EOF
+cd ..
+echo "Done."
+
+# Generating sample gin gonic main.go
+echo
+echo "Constructing Gin Gonic main.go example..."
+cat << EOF > main.go
+package main
+
+// @import
+import (
+	"$project_name/routers"
+	"$project_name/utils"
+	"os"
+
+	"github.com/gin-gonic/gin"
+)
+
+// @notice: global variables
+var (
+  server			*gin.Engine
+)
+
+// @dev Runs before main()
+func init() {
+  // load env variables
+	if (os.Getenv("GIN_MODE") != "release") {utils.LoadEnvVars()}
+  
+  // set up gin engine
+  server = gin.Default()
+
+  // Gin trust all proxies by default and it's not safe. Set trusted proxy to home router to to mitigate 
+  server.SetTrustedProxies([]string{os.Getenv("HOME_ROUTER")})
+}
+
+// @dev Root function
+func main() {
+  // Catch all unallowed HTTP methods sent to the server
+  server.HandleMethodNotAllowed = true
+
+  // init basePath
+  basePath := server.Group("/v1/ap/gifts/")
+
+  // init Handler
+  routers.ServerRouter(basePath)
+
+  // run gin server engine
+  if (os.Getenv("GIN_MODE") != "release") {
+    server.Run(os.Getenv("LOCAL_DEV_PORT"))
+  } else {
+    server.Run(":"+os.Getenv("PRODUCTION_PORT"))
+  }
+}
+
+EOF
+
+echo "Done."
+
 
 # Initial commit
 echo
