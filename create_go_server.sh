@@ -310,7 +310,7 @@ func main() {
   server.HandleMethodNotAllowed = true
 
   // init basePath
-  basePath := server.Group("/v1/ap/gifts/")
+  basePath := server.Group("/v1")
 
   // init Handler
   routers.ServerRouter(basePath)
