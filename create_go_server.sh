@@ -208,3 +208,7 @@ fi
 
 echo 
 echo "Success! Created $project_name at $(pwd)"
+echo 
+echo -e "To start development mode, run \ncd $project_name && make dev"
+echo 
+echo "Happy building!"
