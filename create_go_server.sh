@@ -42,16 +42,6 @@ while [[ ! $db_driver =~ ^(1|2|3)$ ]]; do
     esac
 done
 
-# Prompt for add_env_file selection
-read -p "Would you like to add a sample .env? (Y/n) " add_env_file
-add_env_file=${add_env_file:-Y}
-
-# Prompt for Makefile selection
-read -p "Would you like to add a sample Makefile? (Y/n) " add_makefile
-add_makefile=${add_makefile:-Y}
-
-
-
 #############################################
 #########    INSTALLATIONS      #############
 #############################################
@@ -241,7 +231,16 @@ $db_uri=YOUR_DB_URI
 $db_name=YOUR_DB_NAME
 EOF
     echo "Done."
-fi
+
+# Create .env.example
+echo 
+echo "Creating sample example.env..."
+cat << EOF > example.env
+PRODUCTION_PORT=8080
+$db_uri=YOUR_DB_URI
+$db_name=YOUR_DB_NAME
+EOF
+echo "Done."
 
 # Create Makefile
 if [[ $add_env_file =~ ^[Yy]$ ]]; then
