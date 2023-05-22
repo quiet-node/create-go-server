@@ -12,13 +12,13 @@ project_name=${project_name:-my-go-server}
 read -p "Would you like to install Gin-Gonic web framework? (Y/n): " install_gin
 install_gin=${install_gin:-Y}
 
-# Prompt for CompileDaemon installation
-read -p "Would you like to install CompileDaemon package for live dev server update? (Y/n): " install_compile_daemon
-install_compile_daemon=${install_compile_daemon:-Y}
+# # Prompt for CompileDaemon installation
+# read -p "Would you like to install CompileDaemon package for live dev server update? (Y/n): " install_compile_daemon
+# install_compile_daemon=${install_compile_daemon:-Y}
 
-# Prompt for godotenv installation
-read -p "Would you like to install godotenv package? (Y/n): " install_godotenv
-install_godotenv=${install_godotenv:-Y}
+# # Prompt for godotenv installation
+# read -p "Would you like to install godotenv package? (Y/n): " install_godotenv
+# install_godotenv=${install_godotenv:-Y}
 
 # Prompt for database driver selection
 db_driver=""
@@ -68,7 +68,6 @@ git init
 echo "Done."
 echo
 
-
 # Create .gitignore
 echo "Creating sample .gitignore..."
     cat << EOF > .gitignore
@@ -96,6 +95,19 @@ go.work
 .env
 $project_name
 EOF
+echo "Done."
+
+# Install CompileDaemon
+echo 
+echo "Running go get github.com/githubnemo/CompileDaemon && go install github.com/githubnemo/CompileDaemon..."
+go get github.com/githubnemo/CompileDaemon
+go install github.com/githubnemo/CompileDaemon
+echo "Done."
+
+# Install godotenv
+echo 
+echo "Running go get github.com/joho/godotenv..."
+go get github.com/joho/godotenv
 echo "Done."
 
 # Install Gin-Gonic if selected
@@ -168,23 +180,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 EOF
 echo "Done."
-fi
-
-# Install CompileDaemon if selected
-if [[ $install_compile_daemon =~ ^[Yy]$ ]]; then
-    echo 
-    echo "Running go get github.com/githubnemo/CompileDaemon && go install github.com/githubnemo/CompileDaemon..."
-    go get github.com/githubnemo/CompileDaemon
-    go install github.com/githubnemo/CompileDaemon
-    echo "Done."
-fi
-
-# Install godotenv if selected
-if [[ $install_godotenv =~ ^[Yy]$ ]]; then
-    echo 
-    echo "Running go get github.com/joho/godotenv..."
-    go get github.com/joho/godotenv
-    echo "Done."
 fi
 
 #Install dbdriver
