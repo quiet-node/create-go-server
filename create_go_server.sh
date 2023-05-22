@@ -156,10 +156,15 @@ GO_SERVER=$project_name
 ############### LOCAL BUILD #################
 #############################################
 
-# Workspace file
-go.work
-.env
-$project_name
+# dev-mode
+.phony: dev
+dev: 
+	@\$(COMPILEDAEMON_PATH) -command="./\$(GO_SERVER)"
 
+# local run
+.phony: go-run
+go-run:
+	@go run .
 EOF
+    echo "Done."
 fi
