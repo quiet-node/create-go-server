@@ -70,6 +70,7 @@ echo "Done."
 #Install dbdriver
 case $db_driver_option in
         1)
+            # install mongo-driver packages
             echo 
             echo "Running go get go.mongodb.org/mongo-driver/mongo..."
             go get go.mongodb.org/mongo-driver/mongo
@@ -77,21 +78,112 @@ case $db_driver_option in
             env_file=".env"
             db_uri="MONGODB_URI"
             db_name="MONGO_DB"
+
+            # construct db directory
+            mkdir db
+            cd db
+            cat << EOF > db.go
+// @package
+package db
+
+// @import
+import (
+	"context"
+	"log"
+	"os"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+// @dev Creates a MongoDB instance
+//
+// @return *mongo.Client
+func EstablishMongoClient(ctx context.Context) *mongo.Client {
+	// get the mongoDB uri
+	mongoUri := os.Getenv("MONGODB_URI")
+	if mongoUri == "" {log.Fatal("!MONGODB_URI - uri is not defined.")}
+
+	// Establish the connection
+	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoUri))
+	if err != nil {
+    log.Fatal("!MongoDB Connection - Cannot conenct to MongoDB server")
+  }
+
+	// return mongo client
+	log.Println("MongoDB connected...")
+	return mongoClient
+}
+
+// @dev Gets a mongdb collection based on colectionName
+// 
+// @param mongoClient *mongo.Client
+//  
+// @param collectionName string
+// 
+// @return *mongo.Collection
+func GetMongoCollection(mongoClient *mongo.Client, collectionName string) *mongo.Collection {
+	// get the collection
+	collection := mongoClient.Database(os.Getenv("MONGO_DB")).Collection(collectionName)
+
+	// return the collection
+	return collection
+}
+
+EOF
+            cd ..
+            echo "Done."
             ;;
         2)
+            # install gorm packages
             echo 
             echo "Running go get -u gorm.io/gorm && go get -u gorm.io/driver/postgres..."
             go get -u gorm.io/gorm
             go get -u gorm.io/driver/postgres
             echo "Done."
             env_file=".env"
-            db_uri="POSTGRESDB_URI"
+            db_uri="POSTGRESDB_DSN"
             db_name="POSTGRES_DB"
-            ;;
-        3)
-            env_file=""
-            echo 
-            echo "No database driver will be installed."
+
+            # construct db directory
+            echo
+            echo "Constructing db dir..."
+            mkdir db
+            cd db
+            cat << EOF > db.go
+package db
+
+import (
+	"log"
+	"os"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+// @dev Create a PostgresQL instance
+//
+// @return *gorm.DB
+func EstablishPostgresClient() *gorm.DB {
+	// prepare dsn
+	dsn := os.Getenv("POSTGRESDB_DSN")
+	if dsn == "" {
+		log.Fatal("!POSTGRESDB_DSN - dsn is not defined.")
+	}
+
+	// Open connection
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("!PostgresQL Connection - Cannot conenct to PostgresQL server")
+	}
+
+	// return db
+	log.Println("PostgresQL connected...")
+	return db
+}
+EOF
+            cd ..
+            echo "Done."
             ;;
         *)
             echo 
