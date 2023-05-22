@@ -57,14 +57,30 @@ add_makefile=${add_makefile:-Y}
 #############################################
 
 # Generate and cd to the new directory
+echo
+echo "Starting installation process..."
+echo
+echo "Running mkdir $project_name && cd $project_name..."
 mkdir $project_name
 cd $project_name
+echo "Done."
 
 # Run go mod init
+echo 
+echo "Running go mod init $project_name..."
 go mod init $project_name
+echo "Done."
+
 # init a git repository
+echo 
+echo "Running git init..."
 git init
-    # Create .gitignore
+echo "Done."
+echo
+
+
+# Create .gitignore
+echo "Creating sample .gitignore..."
     cat << EOF > .gitignore
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
@@ -94,40 +110,57 @@ echo "Done."
 
 # Install Gin-Gonic if selected
 if [[ $install_gin =~ ^[Yy]$ ]]; then
+    echo 
+    echo "Running go get -u github.com/gin-gonic/gic..."
     go get -u github.com/gin-gonic/gin
+    echo "Done."
 fi
 
 # Install CompileDaemon if selected
 if [[ $install_compile_daemon =~ ^[Yy]$ ]]; then
+    echo 
+    echo "Running go get github.com/githubnemo/CompileDaemon && go install github.com/githubnemo/CompileDaemon..."
     go get github.com/githubnemo/CompileDaemon
     go install github.com/githubnemo/CompileDaemon
+    echo "Done."
 fi
 
 # Install godotenv if selected
 if [[ $install_godotenv =~ ^[Yy]$ ]]; then
+    echo 
+    echo "Running go get github.com/joho/godotenv..."
     go get github.com/joho/godotenv
+    echo "Done."
 fi
 
 #Install dbdriver
 case $db_driver_option in
         1)
+            echo 
+            echo "Running go get go.mongodb.org/mongo-driver/mongo..."
             go get go.mongodb.org/mongo-driver/mongo
+            echo "Done."
             env_file=".env"
             db_uri="MONGODB_URI"
             db_name="MONGO_DB"
             ;;
         2)
+            echo 
+            echo "Running go get -u gorm.io/gorm && go get -u gorm.io/driver/postgres..."
             go get -u gorm.io/gorm
             go get -u gorm.io/driver/postgres
+            echo "Done."
             env_file=".env"
             db_uri="POSTGRESDB_URI"
             db_name="POSTGRES_DB"
             ;;
         3)
             env_file=""
+            echo 
             echo "No database driver will be installed."
             ;;
         *)
+            echo 
             echo "Invalid option. Please select a valid database driver."
             db_driver=""
             ;;
@@ -135,12 +168,16 @@ case $db_driver_option in
 
 # Configure .env file if env_file is specified
 if [[ $add_env_file =~ ^[Yy]$ ]]; then
+    echo 
+    echo "Creating sample .env..."
     # Create .env
     cat << EOF > $env_file
 PRODUCTION_PORT=8080
 $db_uri=YOUR_DB_URI
 $db_name=YOUR_DB_NAME
 EOF
+    echo "Done."
+fi
 
 # Create Makefile
 if [[ $add_env_file =~ ^[Yy]$ ]]; then
@@ -168,3 +205,6 @@ go-run:
 EOF
     echo "Done."
 fi
+
+echo 
+echo "Success! Created $project_name at $(pwd)"
