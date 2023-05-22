@@ -5,7 +5,7 @@
 #############################################
 
 # Prompt for project name
-read -p "What is your project named? (Press Enter for default: my-go-server): " project_name
+read -p "Project name: (Press Enter for default: my-go-server): " project_name
 project_name=${project_name:-my-go-server}
 
 # Prompt for Gin-Gonic installation
@@ -42,14 +42,15 @@ while [[ ! $db_driver =~ ^(1|2|3)$ ]]; do
     esac
 done
 
-# Prompt for .env file
+# Prompt for add_env_file selection
 read -p "Would you like to add a sample .env? (Y/n) " add_env_file
 add_env_file=${env_file:-Y}
+add_env_file=${add_env_file:-Y}
 
 
 
 #############################################
-#########    INSTALLATION      ##############
+#########    INSTALLATIONS      #############
 #############################################
 
 # Generate and cd to the new directory
