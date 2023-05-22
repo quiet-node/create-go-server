@@ -41,6 +41,13 @@ while [[ ! $db_driver =~ ^(1|2|3)$ ]]; do
             ;;
     esac
 done
+
+# Prompt for .env file
+read -p "Would you like to add a sample .env? (Y/n) " add_env_file
+add_env_file=${env_file:-Y}
+
+
+
 #############################################
 #########    INSTALLATION      ##############
 #############################################
@@ -93,3 +100,40 @@ case $db_driver_option in
             ;;
     esac
 
+# Configure .env file if env_file is specified
+if [[ $add_env_file =~ ^[Yy]$ ]]; then
+    # Create .env
+    cat << EOF > $env_file
+PRODUCTION_PORT=8080
+$db_uri=YOUR_DB_URI
+$db_name=YOUR_DB_NAME
+EOF
+
+    # Create .gitignore
+    cat << EOF > .gitignore
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Workspace file
+go.work
+.env
+$project_name
+
+EOF
+fi
