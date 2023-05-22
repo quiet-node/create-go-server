@@ -62,6 +62,35 @@ cd $project_name
 
 # Run go mod init
 go mod init $project_name
+# init a git repository
+git init
+    # Create .gitignore
+    cat << EOF > .gitignore
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Workspace file
+go.work
+.env
+$project_name
+EOF
+echo "Done."
 
 # Install Gin-Gonic if selected
 if [[ $install_gin =~ ^[Yy]$ ]]; then
